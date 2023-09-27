@@ -1,73 +1,112 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# NestJS and Tilt POC
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This project is designed for testing NestJS and Tilt within a Kubernetes environment.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Table of Contents
 
-## Description
+1. [Introduction](#introduction)
+2. [Getting Started](#getting-started)
+   - [Prerequisites](#prerequisites)
+   - [Installation](#installation)
+3. [Running the Application](#running-the-application)
+4. [Running the Application Without Tilt](#running-the-application-without-titl)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 1. Introduction <a name="introduction"></a>
 
-## Installation
+This repository focuses on testing NestJS and Tilt within a Kubernetes environment. Tilt is a tool that assists
+developers in working with microservices. It automates the steps from code change to new process, such as building images and
+updating the environment.
 
-```bash
-$ npm install
+## 2. Getting Started <a name="getting-started"></a>
+
+### Prerequisites <a name="prerequisites"></a>
+
+Before you begin, ensure that you have the following tools and dependencies installed:
+- [Docker](https://docs.docker.com/engine/install/) - Containerization platform for packaging and deploying applications.
+- [Minikube](https://minikube.sigs.k8s.io/docs/start) - Local, single-node Kubernetes cluster for development and testing.
+- [Tilt](https://docs.tilt.dev/) - Developer tool automating Kubernetes tasks for smoother development.
+
+### Installation <a name="installation"></a>
+1. Clone this repository to your local machine:
+
+   ```bash
+   git clone https://github.com/pedrodalvy/nestjs-tilt-poc.git
+   ```
+
+2. Change to the repository directory:
+
+   ```bash
+   cd nestjs-tilt-poc
+   ```
+
+## 3. Running the Application <a name="running-the-application"></a>
+
+To run the application, you must first build the image for the in-cluster container runtime. Use the following command
+when running the project for the first time:
+
+```sh
+minikube image build -t nestjs-tilt-poc .
 ```
 
-## Running the app
+Start the application with Tilt using the following command:
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```sh
+tilt up
 ```
 
-## Test
+The `tilt up` command should yield a response like this:
+```sh
+❯ tilt up
+Tilt started on http://localhost:10350/
+v0.33.5, built 2023-09-01
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+(space) to open the browser
+(s) to stream logs (--stream=true)
+(t) to open legacy terminal mode (--legacy=true)
+(ctrl-c) to exit
 ```
 
-## Support
+Open the link `http://localhost:10350/` to check if the app has built correctly:
+![img.png](assets/tilt_dashboard_overciew.png)
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 4. Running the Application Without Tilt <a name="running-the-application-without-titl"></a>
 
-## Stay in touch
+Run the following commands to start the app with Minikube without using Tilt:
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```sh
+minikube image build -t nestjs-tilt-poc .
+minikube kubectl -- apply -f kubernetes.yaml
+minikube kubectl -- -n nestjs-tilt-poc port-forward service/nestjs-tilt-poc 3000:8000 
+```
 
-## License
+You can check if the images are built using the following command:
 
-Nest is [MIT licensed](LICENSE).
+```sh
+minikube kubectl -- get po -n nestjs-tilt-poc
+```
+
+You can also use the Minikube dashboard to check and access the pods:
+
+```sh
+minikube dashboard
+```
+
+A response like this should be returned:
+```sh
+❯ minikube dashboard                            
+🔌  Enabling dashboard ...
+    ▪ Using image docker.io/kubernetesui/dashboard:v2.7.0
+    ▪ Using image docker.io/kubernetesui/metrics-scraper:v1.0.8
+💡  Some dashboard features require the metrics-server addon. To enable all features please run:
+
+        minikube addons enable metrics-server   
+
+
+🤔  Verifying dashboard health ...
+🚀  Launching proxy ...
+🤔  Verifying proxy health ...
+🎉  Opening http://127.0.0.1:46067/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/ in your default browser...
+```
+
+After opening the dashboard link, select the `nestjs-tilt-poc` namespace to see the following page:
+![img.png](assets/minikube_dashboard.png)
